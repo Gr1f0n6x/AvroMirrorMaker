@@ -1,0 +1,83 @@
+buildscript {
+    repositories {
+        mavenCentral()
+
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+}
+
+plugins {
+    id 'java'
+    id 'scala'
+}
+
+repositories {
+    mavenCentral()
+
+    maven {
+        url 'http://packages.confluent.io/maven/'
+    }
+
+    maven {
+        url 'https://repo.hortonworks.com/content/repositories/releases/'
+    }
+}
+
+group 'com.github.gr1f0n6x'
+version '0.1'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+ext {
+    scalaMajorVersion = '2.12'
+    scala = '2.12.8'
+    confluentVersion = '5.0.0'
+    kafkaVersion = '2.0.0'
+    avroVersion = '1.8.2'
+    hortonVersion = '0.7.0.1.0.0.0-11'
+    jaxbVersion = '2.3.0'
+}
+
+configurations {
+    provided
+    compile.extendsFrom provided
+}
+
+dependencies {
+    provided(group: 'org.scala-lang', name: 'scala-library', version: scala)
+    provided(group: 'org.scala-lang', name: 'scala-compiler', version: scala)
+    provided(group: 'org.apache.avro', name: 'avro', version: avroVersion)
+    provided(group: 'org.apache.kafka', name: 'kafka_2.12', version: kafkaVersion)
+
+    compile(group: 'io.confluent', name: 'kafka-avro-serializer', version: confluentVersion)
+    compile(group: 'com.hortonworks.registries', name: 'schema-registry-serdes', version: hortonVersion)
+    compile(group: 'javax.xml.bind', name: 'jaxb-api', version: jaxbVersion)
+}
+
+configurations.all {
+    resolutionStrategy.eachDependency {
+        DependencyResolveDetails details ->
+            if (details.requested.group.contains('org.glassfish.jersey')) {
+                details.useVersion '2.27'
+            }
+    }
+}
+
+jar {
+    dependsOn configurations.runtime
+
+    from {
+        (configurations.runtime - configurations.provided).collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+
+    jar.archiveName = "$project.name-$project.version-all.jar"
+}
