@@ -33,8 +33,8 @@ public class HortonToConfluentSerializer implements AvroSerializer {
         Map<String, Object> hortonConfig = new HashMap<>(configs);
         Map<String, Object> confluentConfig = new HashMap<>(configs);
 
-        hortonConfig.put(SchemaRegistryClient.Configuration.SCHEMA_REGISTRY_URL.name(), configs.get(Common.HORTON_SCHEMA_REGISTRY_URL_CONFIG));
-        confluentConfig.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, configs.get(Common.CONFLUENT_SCHEMA_REGISTRY_URL_CONFIG));
+        hortonConfig.put(SchemaRegistryClient.Configuration.SCHEMA_REGISTRY_URL.name(), configs.get(Common.SOURCE_SCHEMA_REGISTRY_URL_CONFIG));
+        confluentConfig.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, configs.get(Common.TARGET_SCHEMA_REGISTRY_URL_CONFIG));
 
         hortonDeserializer.configure(hortonConfig, false);
         confluentSerializer.configure(confluentConfig, false);

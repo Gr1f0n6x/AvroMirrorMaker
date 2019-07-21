@@ -26,7 +26,7 @@ repositories {
 }
 
 group 'com.github.gr1f0n6x'
-version '0.1'
+version '0.2'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -38,8 +38,8 @@ tasks.withType(JavaCompile) {
 ext {
     scalaMajorVersion = '2.12'
     scala = '2.12.8'
-    confluentVersion = '5.0.0'
-    kafkaVersion = '2.0.0'
+    confluentVersion = '5.1.0'
+    kafkaVersion = '2.1.0'
     avroVersion = '1.8.2'
     hortonVersion = '0.3.0.3.0.1.1-5'
     jaxbVersion = '2.3.0'

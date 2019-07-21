@@ -1,7 +1,7 @@
 version: '3'
 services:
   zookeeper-1:
-    image: confluentinc/cp-zookeeper:5.0.0
+    image: confluentinc/cp-zookeeper:5.1.0
     container_name: zookeeper-1
     hostname: zookeeper-1
     ports:
@@ -10,7 +10,7 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
   kafka-1:
-    image: confluentinc/cp-enterprise-kafka:5.0.0
+    image: confluentinc/cp-enterprise-kafka:5.1.0
     container_name: kafka-1
     hostname: kafka-1
     depends_on:
@@ -25,15 +25,15 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:9092,PLAINTEXT_HOST://localhost:29092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      CLASSPATH: '$CLASSPATH:/avro-mirror-maker-0.1-all.jar'
+      CLASSPATH: '$CLASSPATH:/avro-mirror-maker-0.2-all.jar'
     volumes:
-    - './../../build/libs/avro-mirror-maker-0.1-all.jar:/avro-mirror-maker-0.1-all.jar'
+    - './../../build/libs/avro-mirror-maker-0.2-all.jar:/avro-mirror-maker-0.2-all.jar'
     - './confluent-consumer.properties:/confluent-consumer.properties'
     - './horton-producer.properties:/horton-producer.properties'
     - './jersey-entity-filtering-2.27.jar:/usr/share/java/kafka/jersey-entity-filtering-2.27.jar'
     - './jersey-media-json-jackson-2.27.jar:/usr/share/java/kafka/jersey-media-json-jackson-2.27.jar'
   confluent-registry:
-    image: confluentinc/cp-schema-registry:5.0.0
+    image: confluentinc/cp-schema-registry:5.1.0
     container_name: confluent-registry
     hostname: confluent-registry
     depends_on:
@@ -59,7 +59,7 @@ services:
       SCHEMAREGISTRY_URL: 'http://confluent-registry:8081'
       PROXY: 'true'
   rest-proxy:
-    image: confluentinc/cp-kafka-rest:5.0.0
+    image: confluentinc/cp-kafka-rest:5.1.0
     container_name: rest-proxy
     hostname: rest-proxy
     depends_on:
@@ -74,7 +74,7 @@ services:
       KAFKA_REST_ACCESS_CONTROL_ALLOW_METHODS: GET,POST,PUT,DELETE,OPTIONS,HEAD
       KAFKA_REST_ACCESS_CONTROL_ALLOW_ORIGIN: '*'
   zookeeper-2:
-    image: confluentinc/cp-zookeeper:5.0.0
+    image: confluentinc/cp-zookeeper:5.1.0
     container_name: zookeeper-2
     hostname: zookeeper-2
     ports:
@@ -83,7 +83,7 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2182
       ZOOKEEPER_TICK_TIME: 2000
   kafka-2:
-    image: confluentinc/cp-enterprise-kafka:5.0.0
+    image: confluentinc/cp-enterprise-kafka:5.1.0
     container_name: kafka-2
     hostname: kafka-2
     depends_on:
@@ -98,9 +98,9 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:9093,PLAINTEXT_HOST://localhost:29093
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      CLASSPATH: '$CLASSPATH:/avro-mirror-maker-0.1-all.jar'
+      CLASSPATH: '$CLASSPATH:/avro-mirror-maker-0.2-all.jar'
     volumes:
-    - './../../build/libs/avro-mirror-maker-0.1-all.jar:/avro-mirror-maker-0.1-all.jar'
+    - './../../build/libs/avro-mirror-maker-0.2-all.jar:/avro-mirror-maker-0.2-all.jar'
     - './horton-consumer.properties:/horton-consumer.properties'
     - './confluent-producer.properties:/confluent-producer.properties'
     - './jersey-entity-filtering-2.27.jar:/usr/share/java/kafka/jersey-entity-filtering-2.27.jar'
