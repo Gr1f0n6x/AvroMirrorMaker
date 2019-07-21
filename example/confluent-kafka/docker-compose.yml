@@ -1,0 +1,132 @@
+version: '3'
+services:
+  zookeeper-1:
+    image: confluentinc/cp-zookeeper:5.0.0
+    container_name: zookeeper-1
+    hostname: zookeeper-1
+    ports:
+    - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+  kafka-1:
+    image: confluentinc/cp-enterprise-kafka:5.0.0
+    container_name: kafka-1
+    hostname: kafka-1
+    depends_on:
+    - zookeeper-1
+    ports:
+    - "9092:9092"
+    - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper-1:2181'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      CLASSPATH: '$CLASSPATH:/avro-mirror-maker-0.1-all.jar'
+    volumes:
+    - './../../build/libs/avro-mirror-maker-0.1-all.jar:/avro-mirror-maker-0.1-all.jar'
+    - './confluent-consumer.properties:/confluent-consumer.properties'
+    - './horton-producer.properties:/horton-producer.properties'
+    - './jersey-entity-filtering-2.27.jar:/usr/share/java/kafka/jersey-entity-filtering-2.27.jar'
+    - './jersey-media-json-jackson-2.27.jar:/usr/share/java/kafka/jersey-media-json-jackson-2.27.jar'
+  confluent-registry:
+    image: confluentinc/cp-schema-registry:5.0.0
+    container_name: confluent-registry
+    hostname: confluent-registry
+    depends_on:
+    - zookeeper-1
+    - kafka-1
+    ports:
+    - "8081:8081"
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: confluent-registry
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: 'zookeeper-1:2181'
+      SCHEMA_REGISTRY_LISTENERS: 'http://confluent-registry:8081'
+      SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_METHODS: GET,POST,PUT,DELETE,OPTIONS,HEAD
+      SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_ORIGIN: '*'
+  confluent-registry-ui:
+    image: landoop/schema-registry-ui:0.9.5
+    hostname: confluent-registry-ui
+    container_name: confluent-registry-ui
+    depends_on:
+    - confluent-registry
+    ports:
+    - "8000:8000"
+    environment:
+      SCHEMAREGISTRY_URL: 'http://confluent-registry:8081'
+      PROXY: 'true'
+  rest-proxy:
+    image: confluentinc/cp-kafka-rest:5.0.0
+    container_name: rest-proxy
+    hostname: rest-proxy
+    depends_on:
+    - confluent-registry
+    ports:
+    - "8082:8082"
+    environment:
+      KAFKA_REST_HOST_NAME: rest-proxy
+      KAFKA_REST_BOOTSTRAP_SERVERS: 'kafka-1:9092'
+      KAFKA_REST_LISTENERS: "http://0.0.0.0:8082"
+      KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://confluent-registry:8081'
+      KAFKA_REST_ACCESS_CONTROL_ALLOW_METHODS: GET,POST,PUT,DELETE,OPTIONS,HEAD
+      KAFKA_REST_ACCESS_CONTROL_ALLOW_ORIGIN: '*'
+  zookeeper-2:
+    image: confluentinc/cp-zookeeper:5.0.0
+    container_name: zookeeper-2
+    hostname: zookeeper-2
+    ports:
+    - "2182:2182"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2182
+      ZOOKEEPER_TICK_TIME: 2000
+  kafka-2:
+    image: confluentinc/cp-enterprise-kafka:5.0.0
+    container_name: kafka-2
+    hostname: kafka-2
+    depends_on:
+    - zookeeper-2
+    ports:
+    - "9093:9093"
+    - "29093:29093"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper-2:2182'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:9093,PLAINTEXT_HOST://localhost:29093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      CLASSPATH: '$CLASSPATH:/avro-mirror-maker-0.1-all.jar'
+    volumes:
+    - './../../build/libs/avro-mirror-maker-0.1-all.jar:/avro-mirror-maker-0.1-all.jar'
+    - './horton-consumer.properties:/horton-consumer.properties'
+    - './confluent-producer.properties:/confluent-producer.properties'
+    - './jersey-entity-filtering-2.27.jar:/usr/share/java/kafka/jersey-entity-filtering-2.27.jar'
+    - './jersey-media-json-jackson-2.27.jar:/usr/share/java/kafka/jersey-media-json-jackson-2.27.jar'
+  horton-db:
+    image: mysql:latest
+    container_name: horton-db
+    hostname: horton-db
+    ports:
+    - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: hortonworks
+      MYSQL_USER: hortonworks
+      MYSQL_PASSWORD: password
+  horton-registry:
+    image: thebookpeople/hortonworks-registry:latest
+    container_name: horton-registry
+    hostname: horton-registry
+    depends_on:
+    - horton-db
+    ports:
+    - "9090:9090"
+    environment:
+      DB_NAME: hortonworks
+      DB_USER: hortonworks
+      DB_PASSWORD: password
+      DB_PORT: 3306
+      DB_HOST: horton-db
