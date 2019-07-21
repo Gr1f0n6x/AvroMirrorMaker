@@ -1,6 +1,8 @@
 package avro.mirrormaker;
 
+import com.hortonworks.registries.schemaregistry.client.SchemaRegistryClient;
 import com.hortonworks.registries.schemaregistry.serdes.avro.kafka.KafkaAvroSerializer;
+import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig;
 import io.confluent.kafka.serializers.KafkaAvroDeserializer;
 
 import java.util.HashMap;
@@ -19,8 +21,8 @@ public class ConfluentToHortonSerializer implements AvroSerializer {
         Map<String, Object> confluentConfig = new HashMap<>();
         Map<String, Object> hortonConfig = new HashMap<>();
 
-        confluentConfig.put("schema.registry.url", confluentUrl);
-        hortonConfig.put("schema.registry.url", hortonUrl);
+        confluentConfig.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, confluentUrl);
+        hortonConfig.put(SchemaRegistryClient.Configuration.SCHEMA_REGISTRY_URL.name(), hortonUrl);
 
         confluentDeserializer.configure(confluentConfig, false);
         hortonSerializer.configure(hortonConfig, false);
@@ -31,8 +33,8 @@ public class ConfluentToHortonSerializer implements AvroSerializer {
         Map<String, Object> confluentConfig = new HashMap<>(configs);
         Map<String, Object> hortonConfig = new HashMap<>(configs);
 
-        confluentConfig.put("schema.registry.url", configs.get(Common.CONFLUENT_SCHEMA_REGISTRY_URL_CONFIG));
-        hortonConfig.put("schema.registry.url", configs.get(Common.HORTON_SCHEMA_REGISTRY_URL_CONFIG));
+        confluentConfig.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, configs.get(Common.CONFLUENT_SCHEMA_REGISTRY_URL_CONFIG));
+        hortonConfig.put(SchemaRegistryClient.Configuration.SCHEMA_REGISTRY_URL.name(), configs.get(Common.HORTON_SCHEMA_REGISTRY_URL_CONFIG));
 
         confluentDeserializer.configure(confluentConfig, false);
         hortonSerializer.configure(hortonConfig, false);

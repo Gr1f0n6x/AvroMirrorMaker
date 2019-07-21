@@ -23,7 +23,7 @@ public abstract class BaseHandler implements MirrorMaker.MirrorMakerMessageHandl
     @Override
     public List<ProducerRecord<byte[], byte[]>> handle(BaseConsumerRecord record) {
         Long timestamp = record.timestamp() == RecordBatch.NO_TIMESTAMP ? null : record.timestamp();
-        return Collections.singletonList(new ProducerRecord(
+        return Collections.singletonList(new ProducerRecord<>(
                 record.topic(),
                 null,
                 timestamp,
