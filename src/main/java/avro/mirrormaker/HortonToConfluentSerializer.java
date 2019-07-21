@@ -2,7 +2,6 @@ package avro.mirrormaker;
 
 import com.hortonworks.registries.schemaregistry.serdes.avro.kafka.KafkaAvroDeserializer;
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
-import org.apache.kafka.common.serialization.Serializer;
 
 import java.util.HashMap;
 import java.util.Map;

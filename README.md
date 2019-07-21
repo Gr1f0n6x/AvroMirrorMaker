@@ -17,6 +17,6 @@ export CLASSPATH=$CLASSPATH:<path to jar>
 
 ## Usage
 ```bash
-./kafka-mirror-maker --consumer.config consumer.properties --producer.config producer.properties --message.handler ConfluentToHortonHandle --message.handler.args http://confluent:port;http://horton:port
-./kafka-mirror-maker --consumer.config consumer.properties --producer.config producer.properties --message.handler HortonToConfluentHandler --message.handler.args http://horton:port;http://confluent:port
+./kafka-mirror-maker --consumer.config consumer.properties --producer.config producer.properties --message.handler avro.mirrormaker.ConfluentToHortonHandle --message.handler.args http://confluent:port,http://horton:port
+./kafka-mirror-maker --consumer.config consumer.properties --producer.config producer.properties --message.handler avro.mirrormaker.HortonToConfluentHandler --message.handler.args http://horton:port,http://confluent:port
 ```

@@ -43,6 +43,8 @@ ext {
     avroVersion = '1.8.2'
     hortonVersion = '0.7.0.1.0.0.0-11'
     jaxbVersion = '2.3.0'
+    jerseyVersion = '2.27'
+    jacksonVersion = '2.9.8'
 }
 
 configurations {
@@ -53,11 +55,27 @@ configurations {
 dependencies {
     provided(group: 'org.scala-lang', name: 'scala-library', version: scala)
     provided(group: 'org.scala-lang', name: 'scala-compiler', version: scala)
-    provided(group: 'org.apache.avro', name: 'avro', version: avroVersion)
     provided(group: 'org.apache.kafka', name: 'kafka_2.12', version: kafkaVersion)
+    provided(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion)
+    provided(group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jacksonVersion)
+    provided(group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: jacksonVersion)
+    provided(group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: jacksonVersion)
 
-    compile(group: 'io.confluent', name: 'kafka-avro-serializer', version: confluentVersion)
-    compile(group: 'com.hortonworks.registries', name: 'schema-registry-serdes', version: hortonVersion)
+    compile(group: 'org.apache.avro', name: 'avro', version: avroVersion)
+    compile(group: 'io.confluent', name: 'kafka-avro-serializer', version: confluentVersion) {
+        exclude(group: 'org.apache.kafka', module: 'kafka-clients')
+        exclude(group: 'org.apache.avro', module: 'avro')
+        exclude(group: 'com.fasterxml.jackson.core', module: 'jackson-databind')
+        exclude(group: 'org.apache.zookeeper', module: 'zookeeper')
+    }
+    compile(group: 'com.hortonworks.registries', name: 'schema-registry-serdes', version: hortonVersion) {
+        exclude(group: 'org.apache.avro', module: 'avro')
+        exclude(group: 'com.fasterxml.jackson.jaxrs', module: 'jackson-jaxrs-json-provider')
+        exclude(group: 'com.fasterxml.jackson.core', module: 'jackson-databind')
+        exclude(group: 'com.fasterxml.jackson.core', module: 'jackson-core')
+        exclude(group: 'com.fasterxml.jackson.core', module: 'jackson-annotations')
+        exclude(group: 'org.slf4j')
+    }
     compile(group: 'javax.xml.bind', name: 'jaxb-api', version: jaxbVersion)
 }
 
@@ -65,7 +83,7 @@ configurations.all {
     resolutionStrategy.eachDependency {
         DependencyResolveDetails details ->
             if (details.requested.group.contains('org.glassfish.jersey')) {
-                details.useVersion '2.27'
+                details.useVersion jerseyVersion
             }
     }
 }

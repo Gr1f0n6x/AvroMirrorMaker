@@ -13,10 +13,10 @@ public abstract class BaseHandler implements MirrorMaker.MirrorMakerMessageHandl
     protected AvroSerializer serializer;
 
     public BaseHandler(String args) {
-        urls = args.split(";");
+        urls = args.split(",");
 
         if (urls.length != 2) {
-            throw new IllegalArgumentException("Incorrect urls. Urls format: http://host:port;http://host:port");
+            throw new IllegalArgumentException("Incorrect urls. Urls format: http://host:port,http://host:port");
         }
     }
 
